@@ -18,7 +18,7 @@ const PORTAL_CONFIG = {
     {
       nome: "Gestão Financeira",
       descricao: "Acessar os relatórios de gestão financeira",
-      url: "https://datastudio.google.com/navigation/reporting",
+      url: "https://datastudio.google.com/reporting/06aa5370-0f65-4c85-8e1f-dc3ce4ad5b6d/page/p_3pu0qo75td",
       novaAba: false,
     },
   ],
