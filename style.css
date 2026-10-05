@@ -41,7 +41,7 @@ body {
   justify-content: center;
 }
 
-.cabecalho { text-align: center; margin-bottom: 48px; }
+.cabecalho { text-align: center; margin-bottom: 36px; }
 
 .logo {
   display: block;
@@ -117,6 +117,59 @@ body {
 
 .quadrante:focus-visible { outline: 3px solid var(--cor); outline-offset: 3px; }
 
+/* Ícone do cartão */
+.quadrante-icone {
+  position: absolute;
+  top: 26px;
+  left: 28px;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--borda);
+  color: var(--cor);
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.quadrante-icone svg {
+  width: 34px;
+  height: 34px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.quadrante:hover .quadrante-icone { border-color: var(--cor); background: rgba(255, 255, 255, 0.12); }
+
+/* Animações ao passar o mouse */
+.quadrante:hover .icone-onibus svg { animation: onibus-anda 0.9s ease-in-out infinite; }
+.quadrante:hover .icone-satelite svg { animation: satelite-balanca 1.4s ease-in-out infinite; }
+.quadrante:hover .icone-cifrao svg { animation: moeda-gira 1.2s ease-in-out infinite; }
+
+@keyframes onibus-anda {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px) translateY(-1px); }
+  75% { transform: translateX(2px) translateY(-1px); }
+}
+
+@keyframes satelite-balanca {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-14deg); }
+}
+
+@keyframes moeda-gira {
+  0% { transform: perspective(200px) rotateY(0deg); }
+  100% { transform: perspective(200px) rotateY(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quadrante:hover .quadrante-icone svg { animation: none; }
+}
+
 .quadrante-nome {
   font-family: "Exo", sans-serif;
   font-size: 1.45rem;
@@ -144,6 +197,134 @@ body {
   transform: translateX(4px);
   background: var(--cor);
   color: #fff;
+}
+
+/* Faixa Missão / Visão / Valores */
+.institucional {
+  position: relative;
+  margin-top: 40px;
+  padding: 24px 32px 28px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid var(--borda);
+  border-radius: 16px;
+  text-align: center;
+}
+
+.inst-abas {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.inst-aba {
+  padding: 6px 16px;
+  border: 1px solid var(--borda);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--texto-suave);
+  font: 600 0.8rem "Exo", sans-serif;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.inst-aba:hover { color: var(--texto); border-color: rgba(255, 255, 255, 0.4); }
+
+.inst-aba.ativa {
+  background: var(--degrade);
+  border-color: transparent;
+  color: #fff;
+}
+
+.inst-palco {
+  display: grid;
+  min-height: 72px;
+  align-items: center;
+}
+
+/* Todos os slides ocupam a mesma célula; só o ativo aparece */
+.inst-slide {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  pointer-events: none;
+}
+
+.inst-slide.ativo {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.inst-texto {
+  max-width: 760px;
+  margin: 0 auto;
+  font-family: "Exo", sans-serif;
+  font-size: 1.35rem;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.inst-valores {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.inst-valores li {
+  padding: 8px 18px;
+  border: 1px solid rgba(255, 122, 0, 0.45);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  font-family: "Exo", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  opacity: 0;
+  transform: scale(0.85);
+}
+
+.inst-slide.ativo .inst-valores li {
+  animation: valor-entra 0.5s ease forwards;
+  animation-delay: var(--atraso);
+}
+
+@keyframes valor-entra {
+  to { opacity: 1; transform: none; }
+}
+
+.inst-progresso {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.inst-progresso span {
+  display: block;
+  height: 100%;
+  background: var(--degrade);
+  transform-origin: left;
+  animation: progresso linear forwards;
+}
+
+.institucional.pausado .inst-progresso span { animation-play-state: paused; }
+
+@keyframes progresso {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .inst-slide, .inst-valores li { transition: none; animation: none !important; opacity: 1; transform: none; }
+  .inst-slide:not(.ativo) { opacity: 0; }
 }
 
 .rodape {
