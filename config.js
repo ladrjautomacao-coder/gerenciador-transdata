@@ -15,5 +15,11 @@ const PORTAL_CONFIG = {
       url: "https://transmobile.vercel.app/login",
       novaAba: false,
     },
+    {
+      nome: "Gestão Financeira",
+      descricao: "Acessar os relatórios de gestão financeira",
+      url: "https://datastudio.google.com/navigation/reporting",
+      novaAba: false,
+    },
   ],
 };

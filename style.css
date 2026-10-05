@@ -6,6 +6,7 @@
   --borda: #dde2ea;
   --cor-1: #0b5cad;
   --cor-2: #0f8a5f;
+  --cor-3: #b45309;
   --sombra: 0 4px 16px rgba(20, 30, 50, 0.08);
   --sombra-hover: 0 10px 28px rgba(20, 30, 50, 0.16);
 }
@@ -19,6 +20,7 @@
     --borda: #2a3240;
     --cor-1: #4b9bea;
     --cor-2: #3cc493;
+    --cor-3: #f0a04b;
     --sombra: 0 4px 16px rgba(0, 0, 0, 0.3);
     --sombra-hover: 0 10px 28px rgba(0, 0, 0, 0.45);
   }
@@ -53,7 +55,7 @@ body {
 
 .quadrantes {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 24px;
 }
 
@@ -76,6 +78,7 @@ body {
 
 .quadrante-1 { --cor: var(--cor-1); }
 .quadrante-2 { --cor: var(--cor-2); }
+.quadrante-3 { --cor: var(--cor-3); }
 
 .quadrante:hover,
 .quadrante:focus-visible {
