@@ -5,19 +5,19 @@ const PORTAL_CONFIG = {
   opcoes: [
     {
       nome: "Projetos Transdata",
-      descricao: "Acessar o sistema de projetos Transdata",
+      descricao: "Sistema de projetos Transdata",
       url: "https://projetostransdata.vercel.app/",
       novaAba: false,
     },
     {
       nome: "Projetos Transmobile",
-      descricao: "Acessar o sistema de projetos Transmobile",
+      descricao: "Sistema de projetos Transmobile",
       url: "https://transmobile.vercel.app/login",
       novaAba: false,
     },
     {
       nome: "Gestão Financeira",
-      descricao: "Acessar os relatórios de gestão financeira",
+      descricao: "Relatórios de gestão financeira",
       url: "https://datastudio.google.com/reporting/06aa5370-0f65-4c85-8e1f-dc3ce4ad5b6d/page/p_3pu0qo75td",
       novaAba: false,
     },
