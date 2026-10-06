@@ -24,6 +24,20 @@ const PORTAL_CONFIG = {
       url: "https://datastudio.google.com/reporting/06aa5370-0f65-4c85-8e1f-dc3ce4ad5b6d/page/p_3pu0qo75td",
       novaAba: false,
     },
+    {
+      nome: "Assistência Técnica",
+      descricao: "Relatórios de assistência técnica",
+      icone: "ferramenta",
+      url: "https://datastudio.google.com/s/pL5Hmi-0wTg",
+      novaAba: false,
+    },
+    {
+      nome: "Estoques",
+      descricao: "Relatórios de estoques",
+      icone: "caixa",
+      url: "https://datastudio.google.com/s/pp_8AaZ8DQY",
+      novaAba: false,
+    },
   ],
 
   // Faixa animada com Missão, Visão e Valores.
