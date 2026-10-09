@@ -59,7 +59,11 @@ const ICONES = {
     seta.setAttribute("aria-hidden", "true");
     seta.textContent = "→";
 
-    link.append(nome, descricao, seta);
+    const texto = document.createElement("span");
+    texto.className = "quadrante-texto";
+    texto.append(nome, descricao);
+
+    link.append(texto, seta);
     container.appendChild(link);
   });
 

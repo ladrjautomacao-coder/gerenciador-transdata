@@ -35,29 +35,29 @@ body {
 .portal {
   flex: 1;
   width: 100%;
-  max-width: 1080px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 48px 16px;
+  padding: 28px 16px 12px;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
-.cabecalho { text-align: center; margin-bottom: 36px; }
+.cabecalho { text-align: center; margin-bottom: 28px; }
 
 .logo {
   display: block;
-  width: 320px;
+  width: 240px;
   max-width: 70%;
   height: auto;
-  margin: 0 auto 12px;
+  margin: 0 auto 4px;
 }
 
 .cabecalho h1 {
-  margin: 0 0 8px;
+  margin: 0;
   font-family: "Exo", sans-serif;
   font-weight: 600;
-  font-size: 1.9rem;
+  font-size: 1.7rem;
   letter-spacing: 0.02em;
 }
 
@@ -66,28 +66,29 @@ body {
   display: block;
   width: 64px;
   height: 4px;
-  margin: 14px auto 0;
+  margin: 10px auto 0;
   border-radius: 2px;
   background: var(--degrade);
 }
 
-.cabecalho p { margin: 14px 0 0; color: var(--texto-suave); font-size: 1.05rem; }
+.cabecalho p { margin: 10px 0 0; color: var(--texto-suave); font-size: 1.05rem; }
 
 .quadrantes {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 24px;
+  gap: 20px;
 }
 
+/* 5 cartões numa linha; em telas médias quebram em 3 + 2 */
 .quadrante {
-  width: calc((100% - 48px) / 3);
+  width: calc((100% - 80px) / 5);
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  min-height: 220px;
-  padding: 28px;
+  justify-content: flex-start;
+  min-height: 190px;
+  padding: 96px 22px 22px;
   overflow: hidden;
   background: var(--card);
   border: 1px solid var(--borda);
@@ -126,12 +127,12 @@ body {
 /* Ícone do cartão */
 .quadrante-icone {
   position: absolute;
-  top: 26px;
-  left: 28px;
+  top: 22px;
+  left: 22px;
   display: grid;
   place-items: center;
-  width: 56px;
-  height: 56px;
+  width: 52px;
+  height: 52px;
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.07);
   border: 1px solid var(--borda);
@@ -189,22 +190,28 @@ body {
   .quadrante:hover .quadrante-icone svg { animation: none; }
 }
 
-.quadrante-nome {
-  font-family: "Exo", sans-serif;
-  font-size: 1.45rem;
-  font-weight: 700;
+.quadrante-texto {
+  display: flex;
+  flex-direction: column;
 }
 
-.quadrante-descricao { margin-top: 6px; color: var(--texto-suave); }
+.quadrante-nome {
+  font-family: "Exo", sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.quadrante-descricao { margin-top: 4px; color: var(--texto-suave); font-size: 0.95rem; }
 
 .quadrante-seta {
   position: absolute;
   top: 26px;
-  right: 26px;
+  right: 20px;
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: 1px solid var(--borda);
   font-size: 1.2rem;
@@ -221,8 +228,8 @@ body {
 /* Faixa Missão / Visão / Valores */
 .institucional {
   position: relative;
-  margin-top: 40px;
-  padding: 24px 32px 28px;
+  margin-top: 28px;
+  padding: 20px 32px 24px;
   overflow: hidden;
   background: rgba(0, 0, 0, 0.18);
   border: 1px solid var(--borda);
@@ -353,7 +360,11 @@ body {
   color: var(--texto-suave);
 }
 
+@media (max-width: 1180px) {
+  .quadrante { width: calc((100% - 40px) / 3); }
+}
+
 @media (max-width: 900px) {
   .quadrantes { max-width: 480px; margin: 0 auto; width: 100%; }
-  .quadrante { width: 100%; min-height: 190px; }
+  .quadrante { width: 100%; min-height: 0; }
 }
