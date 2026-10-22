@@ -82,31 +82,61 @@ function configurarApp() {
   const instalado = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone;
   if (instalado) return;
 
-  // Android / Chrome / Edge: o navegador avisa que dá para instalar.
-  // O botão só aparece no celular; no computador a página precisa caber na tela.
+  // O botão aparece sempre no celular. No computador fica escondido para a
+  // página caber na tela (lá o navegador mostra o ícone de instalar na barra).
+  const celular = window.matchMedia("(max-width: 900px), (pointer: coarse)").matches;
+  if (!celular) return;
+
   const botao = document.getElementById("instalar");
-  const celular = window.matchMedia("(max-width: 900px)").matches;
+  const instrucoes = document.getElementById("instrucoes");
+  botao.hidden = false;
+
+  // Chrome/Edge/Samsung no Android avisam quando dá para instalar direto.
+  // Esse aviso pode demorar (o Chrome espera a pessoa usar a página por ~30s)
+  // ou nunca vir (iPhone, Firefox, navegador de dentro do WhatsApp/Instagram).
   let pedidoInstalacao = null;
   window.addEventListener("beforeinstallprompt", function (evento) {
-    if (!celular) return;
     evento.preventDefault();
     pedidoInstalacao = evento;
-    botao.hidden = false;
   });
-  botao.addEventListener("click", function () {
-    if (!pedidoInstalacao) return;
-    pedidoInstalacao.prompt();
-    pedidoInstalacao.userChoice.finally(function () {
-      pedidoInstalacao = null;
-      botao.hidden = true;
-    });
-  });
-  window.addEventListener("appinstalled", function () { botao.hidden = true; });
 
-  // iPhone / iPad: o Safari não tem botão de instalar, então mostramos a dica
-  const ehIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
-    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-  if (ehIOS) document.getElementById("dica-ios").hidden = false;
+  botao.addEventListener("click", function () {
+    if (pedidoInstalacao) {
+      pedidoInstalacao.prompt();
+      pedidoInstalacao.userChoice.finally(function () { pedidoInstalacao = null; });
+      return;
+    }
+    // Sem o aviso do navegador: mostra o passo a passo do celular da pessoa
+    instrucoes.innerHTML = textoInstrucoes();
+    instrucoes.hidden = !instrucoes.hidden;
+  });
+
+  window.addEventListener("appinstalled", function () {
+    botao.hidden = true;
+    instrucoes.hidden = true;
+  });
+}
+
+function textoInstrucoes() {
+  const ua = navigator.userAgent;
+  const ehIOS = /iphone|ipad|ipod/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const appInterno = /FBAN|FBAV|Instagram|WhatsApp|LinkedInApp|; wv\)/i.test(ua);
+
+  if (appInterno) {
+    return "<strong>Você abriu o link por dentro de outro app</strong> (WhatsApp, Instagram...).<br>" +
+      "Toque nos <strong>3 pontinhos</strong> e escolha <strong>Abrir no navegador</strong>. " +
+      "Lá, toque em <strong>Instalar app</strong> de novo.";
+  }
+  if (ehIOS) {
+    return "<strong>Para instalar no iPhone:</strong><br>" +
+      "1. Toque em <strong>Compartilhar</strong> (quadrado com seta ⬆️) na barra do Safari<br>" +
+      "2. Toque em <strong>Adicionar à Tela de Início</strong><br>" +
+      "3. Toque em <strong>Adicionar</strong>";
+  }
+  return "<strong>Para instalar no Android:</strong><br>" +
+    "1. Toque nos <strong>3 pontinhos ⋮</strong> no canto de cima do navegador<br>" +
+    "2. Toque em <strong>Instalar app</strong> ou <strong>Adicionar à tela inicial</strong><br>" +
+    "3. Confirme em <strong>Instalar</strong>";
 }
 
 // Faixa animada que alterna entre Missão, Visão e Valores.
