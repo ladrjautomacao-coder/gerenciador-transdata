@@ -82,13 +82,11 @@ function configurarApp() {
   const instalado = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone;
   if (instalado) return;
 
-  // O botão aparece sempre no celular. No computador fica escondido para a
-  // página caber na tela (lá o navegador mostra o ícone de instalar na barra).
+  // No celular o botão fica no rodapé; no computador, discreto no canto
+  // superior direito, para não empurrar a faixa de Missão/Visão/Valores.
   const celular = window.matchMedia("(max-width: 900px), (pointer: coarse)").matches;
-  if (!celular) return;
-
-  const botao = document.getElementById("instalar");
-  const instrucoes = document.getElementById("instrucoes");
+  const botao = document.getElementById(celular ? "instalar" : "instalar-pc");
+  const instrucoes = document.getElementById(celular ? "instrucoes" : "instrucoes-pc");
   botao.hidden = false;
 
   // Chrome/Edge/Samsung no Android avisam quando dá para instalar direto.
@@ -106,15 +104,49 @@ function configurarApp() {
       pedidoInstalacao.userChoice.finally(function () { pedidoInstalacao = null; });
       return;
     }
-    // Sem o aviso do navegador: mostra o passo a passo do celular da pessoa
-    instrucoes.innerHTML = textoInstrucoes();
+    // Sem o aviso do navegador: mostra o passo a passo do aparelho da pessoa
+    instrucoes.innerHTML = celular ? textoInstrucoes() : textoInstrucoesPC();
     instrucoes.hidden = !instrucoes.hidden;
   });
+
+  // No computador, clicar fora ou apertar Esc fecha o passo a passo
+  if (!celular) {
+    document.addEventListener("click", function (evento) {
+      if (!instrucoes.hidden && !instrucoes.contains(evento.target) && !botao.contains(evento.target)) {
+        instrucoes.hidden = true;
+      }
+    });
+    document.addEventListener("keydown", function (evento) {
+      if (evento.key === "Escape") instrucoes.hidden = true;
+    });
+  }
 
   window.addEventListener("appinstalled", function () {
     botao.hidden = true;
     instrucoes.hidden = true;
   });
+}
+
+function textoInstrucoesPC() {
+  const ua = navigator.userAgent;
+  if (/Firefox\//.test(ua)) {
+    return "<strong>O Firefox não instala sites como aplicativo.</strong><br>" +
+      "Abra este endereço no <strong>Microsoft Edge</strong> ou no <strong>Google Chrome</strong> e clique em Instalar app de novo.";
+  }
+  if (/Edg\//.test(ua)) {
+    return "<strong>Para instalar no Edge:</strong><br>" +
+      "1. Clique no ícone <strong>Aplicativo disponível</strong> (quadrado com +) na barra de endereço<br>" +
+      "&nbsp;&nbsp;&nbsp;&nbsp;ou em <strong>⋯</strong> → <strong>Aplicativos</strong> → <strong>Instalar este site como aplicativo</strong><br>" +
+      "2. Clique em <strong>Instalar</strong>";
+  }
+  if (/Safari\//.test(ua) && !/Chrome\//.test(ua)) {
+    return "<strong>Para instalar no Mac:</strong><br>" +
+      "No menu <strong>Arquivo</strong>, clique em <strong>Adicionar ao Dock</strong>.";
+  }
+  return "<strong>Para instalar no Chrome:</strong><br>" +
+    "1. Clique no ícone de <strong>instalar</strong> (monitor com seta) na barra de endereço<br>" +
+    "&nbsp;&nbsp;&nbsp;&nbsp;ou em <strong>⋮</strong> → <strong>Transmitir, salvar e compartilhar</strong> → <strong>Instalar página como app</strong><br>" +
+    "2. Clique em <strong>Instalar</strong>";
 }
 
 function textoInstrucoes() {

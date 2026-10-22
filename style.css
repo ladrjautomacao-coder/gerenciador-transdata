@@ -377,7 +377,59 @@ body {
 }
 
 .instalar:hover { transform: translateY(-2px); }
-.instalar[hidden], .instrucoes[hidden] { display: none; }
+.instalar[hidden], .instrucoes[hidden],
+.instalar-pc[hidden], .instrucoes-pc[hidden] { display: none; }
+
+/* Computador: botão discreto no canto superior direito */
+.instalar-pc {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 1px solid var(--borda);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--texto);
+  font: 600 0.85rem "Exo", sans-serif;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+
+.instalar-pc svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.instalar-pc:hover {
+  background: var(--degrade);
+  border-color: transparent;
+  transform: translateY(-1px);
+}
+
+.instrucoes-pc {
+  position: absolute;
+  top: 62px;
+  right: 20px;
+  z-index: 10;
+  width: 360px;
+  padding: 14px 18px;
+  border: 1px solid var(--borda);
+  border-radius: 12px;
+  background: #2e0d4a;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+  color: var(--texto);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
 
 .instrucoes {
   max-width: 420px;
