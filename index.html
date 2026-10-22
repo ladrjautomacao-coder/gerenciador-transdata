@@ -4,6 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Gerenciador Transdata</title>
+  <meta name="description" content="Portal de acesso aos sistemas e relatórios da Transdata">
+  <meta name="theme-color" content="#4d1476">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Transdata">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Exo:wght@500;600;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
@@ -24,7 +33,13 @@
       <div class="inst-progresso"><span id="inst-barra"></span></div>
     </section>
   </main>
-  <footer class="rodape">&copy; <span id="ano"></span> Transdata</footer>
+  <footer class="rodape">
+    <button type="button" class="instalar" id="instalar" hidden>📲 Instalar app</button>
+    <p class="dica-ios" id="dica-ios" hidden>
+      Para instalar no iPhone: toque em <strong>Compartilhar</strong> e depois em <strong>Adicionar à Tela de Início</strong>.
+    </p>
+    <p class="copyright">&copy; <span id="ano"></span> Transdata</p>
+  </footer>
 
   <script src="config.js"></script>
   <script src="app.js"></script>

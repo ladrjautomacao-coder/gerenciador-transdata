@@ -68,7 +68,46 @@ const ICONES = {
   });
 
   montarInstitucional(cfg.institucional);
+  configurarApp();
 })();
+
+// PWA: registra o service worker e oferece a instalação do app.
+function configurarApp() {
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("/sw.js").catch(function () {});
+    });
+  }
+
+  const instalado = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+  if (instalado) return;
+
+  // Android / Chrome / Edge: o navegador avisa que dá para instalar.
+  // O botão só aparece no celular; no computador a página precisa caber na tela.
+  const botao = document.getElementById("instalar");
+  const celular = window.matchMedia("(max-width: 900px)").matches;
+  let pedidoInstalacao = null;
+  window.addEventListener("beforeinstallprompt", function (evento) {
+    if (!celular) return;
+    evento.preventDefault();
+    pedidoInstalacao = evento;
+    botao.hidden = false;
+  });
+  botao.addEventListener("click", function () {
+    if (!pedidoInstalacao) return;
+    pedidoInstalacao.prompt();
+    pedidoInstalacao.userChoice.finally(function () {
+      pedidoInstalacao = null;
+      botao.hidden = true;
+    });
+  });
+  window.addEventListener("appinstalled", function () { botao.hidden = true; });
+
+  // iPhone / iPad: o Safari não tem botão de instalar, então mostramos a dica
+  const ehIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  if (ehIOS) document.getElementById("dica-ios").hidden = false;
+}
 
 // Faixa animada que alterna entre Missão, Visão e Valores.
 function montarInstitucional(inst) {
