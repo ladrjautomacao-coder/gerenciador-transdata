@@ -17,6 +17,19 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Exo:wght@500;600;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <script>
+    // Abertura animada: uma vez por visita e nunca para quem pediu menos movimento.
+    // A classe esconde a tela até cidade.js começar; a reserva mostra tudo se ele não rodar.
+    (function () {
+      try { if (sessionStorage.getItem("transdata-abertura")) return; } catch (e) {}
+      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      var raiz = document.documentElement;
+      raiz.classList.add("abertura");
+      window.__aberturaReserva = setTimeout(function () {
+        raiz.classList.remove("abertura", "abertura-roda");
+      }, 7000);
+    })();
+  </script>
 </head>
 <body>
   <button type="button" class="instalar-pc" id="instalar-pc" hidden>
@@ -47,5 +60,6 @@
 
   <script src="config.js"></script>
   <script src="app.js"></script>
+  <script src="cidade.js"></script>
 </body>
 </html>
