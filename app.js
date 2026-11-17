@@ -16,6 +16,9 @@ const ICONES = {
     '<svg viewBox="0 0 24 24"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73' +
     'l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>' +
     '<path d="m7.5 4.27 9 5.15"/></svg>',
+  rota:
+    '<svg viewBox="0 0 24 24"><circle cx="6" cy="19" r="3"/>' +
+    '<path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></svg>',
 };
 
 // Monta o portal a partir de PORTAL_CONFIG (config.js).
@@ -30,12 +33,16 @@ const ICONES = {
   const container = document.getElementById("quadrantes");
 
   cfg.opcoes.forEach(function (opcao, i) {
-    const link = document.createElement("a");
-    link.className = "quadrante quadrante-" + (i + 1);
-    link.href = opcao.url;
-    if (opcao.novaAba) {
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
+    // Opção sem url ainda: cartão não clicável com o selo "Em breve"
+    const temLink = Boolean(opcao.url);
+    const link = document.createElement(temLink ? "a" : "div");
+    link.className = "quadrante quadrante-" + (i + 1) + (temLink ? "" : " quadrante-breve");
+    if (temLink) {
+      link.href = opcao.url;
+      if (opcao.novaAba) {
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+      }
     }
 
     if (ICONES[opcao.icone]) {
@@ -55,9 +62,14 @@ const ICONES = {
     descricao.textContent = opcao.descricao;
 
     const seta = document.createElement("span");
-    seta.className = "quadrante-seta";
-    seta.setAttribute("aria-hidden", "true");
-    seta.textContent = "→";
+    if (temLink) {
+      seta.className = "quadrante-seta";
+      seta.setAttribute("aria-hidden", "true");
+      seta.textContent = "→";
+    } else {
+      seta.className = "quadrante-selo";
+      seta.textContent = "Em breve";
+    }
 
     const texto = document.createElement("span");
     texto.className = "quadrante-texto";

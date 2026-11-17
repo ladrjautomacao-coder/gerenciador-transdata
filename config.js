@@ -38,6 +38,14 @@ const PORTAL_CONFIG = {
       url: "https://datastudio.google.com/s/pp_8AaZ8DQY",
       novaAba: true,
     },
+    {
+      nome: "RoadMap de Evolução",
+      descricao: "Etapas e próximos passos de evolução",
+      icone: "rota",
+      // Sem link ainda: o cartão aparece com "Em breve". Ao preencher a url, vira um cartão clicável.
+      url: "",
+      novaAba: true,
+    },
   ],
 
   // Faixa animada com Missão, Visão e Valores.
