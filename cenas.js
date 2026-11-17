@@ -1,8 +1,7 @@
 // Cenas animadas de fundo dos cartões da tela inicial: uma por módulo, escolhida
 // pelo campo "cena" no config.js. São desenhadas em canvas no roxo da marca, com
 // a luz na cor de cada módulo, e ficam no lugar das imagens que podem vir do
-// Runway depois. Rodam a ~30 quadros por segundo e só enquanto o cartão está
-// visível; para quem pediu menos movimento no aparelho, ficam paradas.
+// Runway depois. Ficam paradas e só se mexem com o mouse em cima do cartão.
 (function () {
   const telas = Array.from(document.querySelectorAll(".quadrante-cena"));
   if (!telas.length) return;
@@ -327,30 +326,54 @@
     return true;
   }
 
-  const visiveis = new Set();
-  if ("IntersectionObserver" in window) {
-    const observador = new IntersectionObserver(function (entradas) {
-      entradas.forEach(function (e) {
-        if (e.isIntersecting) { visiveis.add(e.target); e.target._feito = false; }
-        else visiveis.delete(e.target);
-      });
+  // Paradas por padrão, para a tela ficar mais limpa. A cena só se mexe com o
+  // mouse em cima do cartão (ou o foco do teclado nele) e, ao sair, fica parada
+  // onde estava. O cartão "Em breve" e quem pediu menos movimento não animam.
+  const REPOUSO = 2; // instante do quadro parado: a luz de cada cena já está à vista
+  const ativas = new Set();
+  let rodando = false, anterior = 0;
+
+  function quadro(agora) {
+    if (!ativas.size) { rodando = false; return; }
+    const dt = Math.min(0.1, (agora - anterior) / 1000);
+    anterior = agora;
+    ativas.forEach(function (cv) {
+      cv._t += dt;
+      desenhar(cv, cv._t);
     });
-    telas.forEach(function (cv) { observador.observe(cv); });
-  } else {
-    telas.forEach(function (cv) { visiveis.add(cv); });
+    requestAnimationFrame(quadro);
+  }
+  function acordar() {
+    if (rodando) return;
+    rodando = true;
+    anterior = performance.now();
+    requestAnimationFrame(quadro);
   }
 
-  let ultimo = 0;
-  function quadro(agora) {
-    requestAnimationFrame(quadro);
-    if (agora - ultimo < 33) return;
-    ultimo = agora;
-    const t = reduzir ? 1.3 : agora / 1000;
-    visiveis.forEach(function (cv) {
-      // Parado: só redesenha quando o cartão aparece ou muda de tamanho
-      if (reduzir && cv._feito && cv._w === cv.parentElement.offsetWidth && cv._h === cv.parentElement.offsetHeight) return;
-      cv._feito = desenhar(cv, t);
+  telas.forEach(function (cv) {
+    cv._t = REPOUSO;
+    desenhar(cv, cv._t);
+    const cartao = cv.parentElement;
+    if (reduzir || cartao.classList.contains("quadrante-breve")) return;
+    const ligar = function () { ativas.add(cv); acordar(); };
+    const desligar = function () { ativas.delete(cv); };
+    cartao.addEventListener("mouseenter", ligar);
+    cartao.addEventListener("mouseleave", desligar);
+    cartao.addEventListener("focus", ligar);
+    cartao.addEventListener("blur", desligar);
+  });
+
+  // Redesenha o quadro parado quando o cartão muda de tamanho (fontes, janela, celular)
+  const redesenhar = function (cv) { if (!ativas.has(cv)) desenhar(cv, cv._t); };
+  if ("ResizeObserver" in window) {
+    const observador = new ResizeObserver(function (entradas) {
+      entradas.forEach(function (e) {
+        const cv = e.target.querySelector(".quadrante-cena");
+        if (cv) redesenhar(cv);
+      });
     });
+    telas.forEach(function (cv) { observador.observe(cv.parentElement); });
+  } else {
+    window.addEventListener("resize", function () { telas.forEach(redesenhar); });
   }
-  requestAnimationFrame(quadro);
 })();
