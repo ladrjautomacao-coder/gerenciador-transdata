@@ -1,6 +1,6 @@
 // Configuração do portal: edite os nomes, descrições e links aqui.
 const PORTAL_CONFIG = {
-  titulo: "Gerenciador Transdata",
+  titulo: "Diretoria de Negócios",
   subtitulo: "Selecione o sistema que deseja acessar",
   opcoes: [
     {
