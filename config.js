@@ -2,11 +2,15 @@
 const PORTAL_CONFIG = {
   titulo: "Diretoria de Negócios",
   subtitulo: "Selecione o sistema que deseja acessar",
+  // Cada cartão: nome, descricao, icone (ver app.js), cena (imagem animada de fundo,
+  // ver cenas.js), rotulo (texto em âmbar no rodapé), url e novaAba.
   opcoes: [
     {
       nome: "Projetos Transdata",
       descricao: "Sistema de projetos Transdata",
       icone: "onibus",
+      cena: "corredor",
+      rotulo: "Sistema",
       url: "https://projetostransdata.vercel.app/",
       novaAba: true,
     },
@@ -14,6 +18,8 @@ const PORTAL_CONFIG = {
       nome: "Projetos Transmobile",
       descricao: "Sistema de projetos Transmobile",
       icone: "satelite",
+      cena: "orbita",
+      rotulo: "Sistema",
       url: "https://transmobile.vercel.app/login",
       novaAba: true,
     },
@@ -21,6 +27,8 @@ const PORTAL_CONFIG = {
       nome: "Gestão de Contratos",
       descricao: "Relatórios de gestão de contratos",
       icone: "cifrao",
+      cena: "vidro",
+      rotulo: "Relatório",
       url: "https://datastudio.google.com/reporting/06aa5370-0f65-4c85-8e1f-dc3ce4ad5b6d/page/p_3pu0qo75td",
       novaAba: true,
     },
@@ -28,6 +36,8 @@ const PORTAL_CONFIG = {
       nome: "Assistência Técnica",
       descricao: "Relatórios de assistência técnica",
       icone: "ferramenta",
+      cena: "discos",
+      rotulo: "Relatório",
       url: "https://datastudio.google.com/s/pL5Hmi-0wTg",
       novaAba: true,
     },
@@ -35,6 +45,8 @@ const PORTAL_CONFIG = {
       nome: "Estoques",
       descricao: "Relatórios de estoques",
       icone: "caixa",
+      cena: "cubos",
+      rotulo: "Relatório",
       url: "https://datastudio.google.com/s/pp_8AaZ8DQY",
       novaAba: true,
     },
@@ -42,7 +54,10 @@ const PORTAL_CONFIG = {
       nome: "RoadMap de Evolução",
       descricao: "Etapas e próximos passos de evolução",
       icone: "rota",
-      // Sem link ainda: o cartão aparece com "Em breve". Ao preencher a url, vira um cartão clicável.
+      cena: "marcos",
+      rotulo: "Roadmap",
+      // Sem link ainda: o cartão mostra "Em breve" e fica sem botão. Ao preencher a url,
+      // vira um cartão clicável com o rótulo acima e o botão "Acessar".
       url: "",
       novaAba: true,
     },

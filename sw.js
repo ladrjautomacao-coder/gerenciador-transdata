@@ -2,12 +2,13 @@
 // abrir rápido e funcionar mesmo sem internet. Sempre tenta a versão mais
 // nova na rede primeiro; só usa a cópia guardada se estiver offline.
 // Ao mudar a lista abaixo, aumente o número da versão.
-const CACHE = "portal-transdata-v2";
+const CACHE = "portal-transdata-v3";
 const ARQUIVOS = [
   "/",
   "/style.css",
   "/config.js",
   "/app.js",
+  "/cenas.js",
   "/cidade.js",
   "/manifest.webmanifest",
   "/assets/logo-transdata.png",

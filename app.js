@@ -33,7 +33,7 @@ const ICONES = {
   const container = document.getElementById("quadrantes");
 
   cfg.opcoes.forEach(function (opcao, i) {
-    // Opção sem url ainda: cartão não clicável com o selo "Em breve"
+    // Opção sem url ainda: cartão não clicável, com "Em breve" no rodapé
     const temLink = Boolean(opcao.url);
     const link = document.createElement(temLink ? "a" : "div");
     link.className = "quadrante quadrante-" + (i + 1) + (temLink ? "" : " quadrante-breve");
@@ -43,6 +43,15 @@ const ICONES = {
         link.target = "_blank";
         link.rel = "noopener noreferrer";
       }
+    }
+
+    // Cena animada de fundo, desenhada por cenas.js (campo "cena" no config.js)
+    if (opcao.cena) {
+      const cena = document.createElement("canvas");
+      cena.className = "quadrante-cena";
+      cena.dataset.cena = opcao.cena;
+      cena.setAttribute("aria-hidden", "true");
+      link.appendChild(cena);
     }
 
     if (ICONES[opcao.icone]) {
@@ -61,21 +70,26 @@ const ICONES = {
     descricao.className = "quadrante-descricao";
     descricao.textContent = opcao.descricao;
 
-    const seta = document.createElement("span");
-    if (temLink) {
-      seta.className = "quadrante-seta";
-      seta.setAttribute("aria-hidden", "true");
-      seta.textContent = "→";
-    } else {
-      seta.className = "quadrante-selo";
-      seta.textContent = "Em breve";
-    }
-
     const texto = document.createElement("span");
     texto.className = "quadrante-texto";
     texto.append(nome, descricao);
 
-    link.append(texto, seta);
+    // Rodapé: rótulo à esquerda ("Em breve" quando ainda não há link) e botão "Acessar"
+    const rodape = document.createElement("span");
+    rodape.className = "quadrante-rodape";
+    const rotulo = document.createElement("span");
+    rotulo.className = "quadrante-rotulo";
+    rotulo.textContent = temLink ? (opcao.rotulo || "") : "Em breve";
+    rodape.appendChild(rotulo);
+    if (temLink) {
+      const botao = document.createElement("span");
+      botao.className = "quadrante-botao";
+      botao.setAttribute("aria-hidden", "true");
+      botao.innerHTML = 'Acessar <svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>';
+      rodape.appendChild(botao);
+    }
+
+    link.append(texto, rodape);
     container.appendChild(link);
   });
 
