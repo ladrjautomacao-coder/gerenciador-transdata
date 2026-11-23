@@ -56,9 +56,8 @@ const PORTAL_CONFIG = {
       icone: "rota",
       cena: "marcos",
       rotulo: "Roadmap",
-      // Sem link ainda: o cartão mostra "Em breve" e fica sem botão. Ao preencher a url,
-      // vira um cartão clicável com o rótulo acima e o botão "Acessar".
-      url: "",
+      // App próprio (projeto "RoadMap de Evolução"), com o mesmo login do Portal Transdata.
+      url: "https://roadmap-de-evolucao.vercel.app",
       novaAba: true,
     },
   ],
