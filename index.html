@@ -18,6 +18,19 @@
   <link href="https://fonts.googleapis.com/css2?family=Exo:wght@500;600;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <script>
+    // Login: decide já na abertura se mostra a tela de acesso ou os sistemas, para não piscar.
+    // A sessão do Supabase fica guardada nesta chave (projeto emzqlctomlsjwmgthbkv); acesso.js confirma depois.
+    // Link de redefinir senha (#...type=recovery) sempre abre a tela de acesso.
+    (function () {
+      var url = location.hash + location.search;
+      var temSessao = false;
+      try { temSessao = !!localStorage.getItem("sb-emzqlctomlsjwmgthbkv-auth-token"); } catch (e) {}
+      if (/access_token=|[?&]code=/.test(url)) temSessao = true; // link de confirmação do cadastro: vai entrar
+      if (/type=recovery/.test(url)) temSessao = false;          // link de redefinir senha: tela de acesso
+      document.documentElement.classList.add(temSessao ? "com-sessao" : "sem-sessao");
+    })();
+  </script>
+  <script>
     // Abertura animada: uma vez por visita e nunca para quem pediu menos movimento.
     // A classe esconde a tela até cidade.js começar; a reserva mostra tudo se ele não rodar.
     (function () {
@@ -38,6 +51,21 @@
   </button>
   <div class="instrucoes-pc" id="instrucoes-pc" hidden></div>
 
+  <!-- Tela de acesso: aparece para quem não entrou. O mesmo login do CS Flow e do Roadmap. -->
+  <main class="acesso" id="acesso" aria-labelledby="acesso-titulo">
+    <div class="acesso-marca">
+      <img class="logo" src="assets/logo-transdata.png" alt="Transdata">
+      <h1 id="acesso-marca-titulo">Diretoria de Negócios</h1>
+      <p class="acesso-visao"><span>Visão</span><span id="acesso-visao-texto"></span></p>
+    </div>
+    <section class="acesso-cartao" aria-live="polite">
+      <img class="acesso-selo" src="assets/icon-192.png" alt="" width="64" height="64">
+      <h2 id="acesso-titulo">Acessar sistemas</h2>
+      <p class="acesso-sub" id="acesso-sub"></p>
+      <div id="acesso-conteudo"></div>
+    </section>
+  </main>
+
   <main class="portal">
     <header class="cabecalho">
       <img class="logo" src="assets/logo-transdata.png" alt="Transdata">
@@ -55,10 +83,13 @@
   <footer class="rodape">
     <button type="button" class="instalar" id="instalar" hidden>📲 Instalar app</button>
     <div class="instrucoes" id="instrucoes" hidden></div>
+    <p class="conta" id="conta" hidden></p>
     <p class="copyright">&copy; <span id="ano"></span> Transdata</p>
   </footer>
 
+  <script src="vendor/supabase-2.119.1.js"></script>
   <script src="config.js"></script>
+  <script src="acesso.js"></script>
   <script src="app.js"></script>
   <script src="cenas.js"></script>
   <script src="cidade.js"></script>

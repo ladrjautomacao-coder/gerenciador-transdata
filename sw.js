@@ -2,11 +2,13 @@
 // abrir rápido e funcionar mesmo sem internet. Sempre tenta a versão mais
 // nova na rede primeiro; só usa a cópia guardada se estiver offline.
 // Ao mudar a lista abaixo, aumente o número da versão.
-const CACHE = "portal-transdata-v3";
+const CACHE = "portal-transdata-v4";
 const ARQUIVOS = [
   "/",
   "/style.css",
   "/config.js",
+  "/acesso.js",
+  "/vendor/supabase-2.119.1.js",
   "/app.js",
   "/cenas.js",
   "/cidade.js",

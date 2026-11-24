@@ -233,7 +233,8 @@
   }
 
   function pontoDoLogo() {
-    const logo = document.querySelector(".logo");
+    // O logo visível: o da tela de acesso (antes do login) ou o do portal
+    const logo = Array.prototype.find.call(document.querySelectorAll(".logo"), function (l) { return l.offsetParent !== null; });
     if (!logo) return { x: W / 2, y: H * 0.15 };
     const ret = logo.getBoundingClientRect();
     return { x: ret.left + ret.width * 0.24, y: ret.top + ret.height * 0.5 };

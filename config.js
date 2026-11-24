@@ -62,6 +62,14 @@ const PORTAL_CONFIG = {
     },
   ],
 
+  // Login (o mesmo do CS Flow e do Roadmap: banco Supabase "Portal oficial - Transdata").
+  // A chave é a publicável: pode ficar no navegador. O cadastro novo só aceita e-mails do domínio abaixo.
+  acesso: {
+    supabaseUrl: "https://emzqlctomlsjwmgthbkv.supabase.co",
+    supabaseChave: "sb_publishable_dSJRMaOWg8LTriAVLtlAhw_FfqdWv-B",
+    dominioCadastro: "itstransdata.com",
+  },
+
   // Faixa animada com Missão, Visão e Valores.
   // RASCUNHO baseado em frases do site itstransdata.com — substituir pelo texto oficial.
   institucional: {
