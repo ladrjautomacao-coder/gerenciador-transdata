@@ -51,11 +51,11 @@ const PORTAL_CONFIG = {
       novaAba: true,
     },
     {
-      nome: "RoadMap de Evolução",
-      descricao: "Etapas e próximos passos de evolução",
+      nome: "Melhoria Contínua",
+      descricao: "Etapas e próximos passos de melhoria contínua",
       icone: "rota",
       cena: "marcos",
-      rotulo: "Roadmap",
+      rotulo: "Melhoria Contínua",
       // App próprio (projeto "RoadMap de Evolução"), com o mesmo login do Portal Transdata.
       url: "https://roadmap-de-evolucao.vercel.app",
       novaAba: true,
