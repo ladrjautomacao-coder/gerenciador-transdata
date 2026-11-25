@@ -607,6 +607,16 @@ html.com-sessao .acesso { display: none; }
   text-transform: uppercase;
   color: var(--ambar);
 }
+.acesso-visao-conteudo p { margin: 0; }
+.acesso-valores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.acesso-valores li::before { content: "•"; padding-right: 7px; color: var(--ambar); }
 
 .acesso-cartao {
   display: grid;

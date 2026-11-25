@@ -12,9 +12,47 @@
   const conta = document.getElementById("conta");
 
   // Textos da marca a partir do config.js
-  const visao = PORTAL_CONFIG.institucional && PORTAL_CONFIG.institucional.itens.find(function (i) { return i.titulo === "Visão"; });
   document.getElementById("acesso-marca-titulo").textContent = PORTAL_CONFIG.titulo;
-  document.getElementById("acesso-visao-texto").textContent = visao ? visao.texto : "";
+  const faixaInstitucional = PORTAL_CONFIG.institucional;
+  const itensInstitucionais = faixaInstitucional && Array.isArray(faixaInstitucional.itens)
+    ? faixaInstitucional.itens
+    : [];
+  const tituloInstitucional = document.getElementById("acesso-visao-titulo");
+  const conteudoInstitucional = document.getElementById("acesso-visao-texto");
+
+  if (itensInstitucionais.length && tituloInstitucional && conteudoInstitucional) {
+    const visaoInicial = itensInstitucionais.findIndex(function (item) { return item.titulo === "Visão"; });
+    let indiceInstitucional = visaoInicial >= 0 ? visaoInicial : 0;
+
+    function mostrarItemInstitucional(item) {
+      tituloInstitucional.textContent = item.titulo || "";
+      conteudoInstitucional.replaceChildren();
+
+      if (Array.isArray(item.valores)) {
+        const lista = document.createElement("ul");
+        lista.className = "acesso-valores";
+        item.valores.forEach(function (valor) {
+          const linha = document.createElement("li");
+          linha.textContent = valor;
+          lista.appendChild(linha);
+        });
+        conteudoInstitucional.appendChild(lista);
+      } else {
+        const texto = document.createElement("p");
+        texto.textContent = item.texto || "";
+        conteudoInstitucional.appendChild(texto);
+      }
+    }
+
+    mostrarItemInstitucional(itensInstitucionais[indiceInstitucional]);
+    if (itensInstitucionais.length > 1) {
+      const intervalo = Math.max(1, Number(faixaInstitucional.segundosPorItem) || 8) * 1000;
+      window.setInterval(function () {
+        indiceInstitucional = (indiceInstitucional + 1) % itensInstitucionais.length;
+        mostrarItemInstitucional(itensInstitucionais[indiceInstitucional]);
+      }, intervalo);
+    }
+  }
 
   function mostrarPortal() { raiz.classList.remove("sem-sessao"); raiz.classList.add("com-sessao"); }
   function mostrarAcesso() { raiz.classList.remove("com-sessao"); raiz.classList.add("sem-sessao"); }
