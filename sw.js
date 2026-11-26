@@ -2,7 +2,10 @@
 // abrir rápido e funcionar mesmo sem internet. Sempre tenta a versão mais
 // nova na rede primeiro; só usa a cópia guardada se estiver offline.
 // Ao mudar a lista abaixo, aumente o número da versão.
-const CACHE = "portal-transdata-v4";
+const CACHE = "portal-transdata-v5";
+// Sistemas que abrem dentro deste endereço (CS Flow, Transmobile, Roadmap): cada um tem o seu
+// próprio service worker; este não guarda nem responde nada deles.
+const SISTEMAS = /^\/(transdata|transmobile|roadmap)(\/|$)/;
 const ARQUIVOS = [
   "/",
   "/style.css",
@@ -40,6 +43,7 @@ self.addEventListener("fetch", function (evento) {
   const url = new URL(pedido.url);
   // Só cuida dos arquivos do próprio portal; links externos seguem direto
   if (pedido.method !== "GET" || url.origin !== self.location.origin) return;
+  if (SISTEMAS.test(url.pathname)) return;
 
   evento.respondWith(
     fetch(pedido)

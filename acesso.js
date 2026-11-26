@@ -1,6 +1,7 @@
 // Tela de acesso do portal: entrar, criar acesso (só e-mail do domínio da Transdata) e redefinir senha.
-// Usa o mesmo login do CS Flow e do Roadmap (Supabase "Portal oficial - Transdata").
-// Quem já tem conta em qualquer desses sistemas entra com o mesmo e-mail e senha.
+// É o único login dos sistemas (Supabase "Portal oficial - Transdata"). O CS Flow (/transdata/), o
+// Transmobile (/transmobile/) e o Roadmap (/roadmap/) abrem dentro deste mesmo endereço e usam esta
+// sessão; sem sessão, eles mandam para cá com ?voltar=<página> e a pessoa volta para lá depois de entrar.
 // Atalhos por link: ?acesso=cadastro abre "Criar acesso" e ?acesso=senha abre "Redefinir senha".
 (function () {
   const raiz = document.documentElement;
@@ -91,6 +92,39 @@
 
   const url = location.hash + location.search;
   const pedido = new URLSearchParams(location.search).get("acesso");
+
+  // ---------- Volta ao sistema que pediu o login ----------
+  // Só caminhos dos sistemas deste endereço; nunca outro site.
+  const SISTEMAS = { transdata: "CS Flow", transmobile: "Transmobile", roadmap: "Roadmap de Evolução" };
+  const voltar = (function () {
+    const v = new URLSearchParams(location.search).get("voltar") || "";
+    const m = /^\/(transdata|transmobile|roadmap)(\/|$)/.exec(v);
+    return m ? { caminho: v, sistema: SISTEMAS[m[1]] } : null;
+  })();
+  let voltando = false;
+  // Se o sistema devolver para cá várias vezes seguidas (sessão que só este lado aceita),
+  // para de ir e voltar: sai da conta e pede para entrar de novo.
+  function voltasSeguidas() {
+    try {
+      const agora = Date.now();
+      const r = JSON.parse(sessionStorage.getItem("portal-voltas") || "{}");
+      const n = r.t && agora - r.t < 30000 ? (r.n || 0) + 1 : 1;
+      sessionStorage.setItem("portal-voltas", JSON.stringify({ t: agora, n: n }));
+      return n;
+    } catch (e) { return 1; }
+  }
+  function voltarAoSistema() {
+    if (!voltar || voltando) return voltando;
+    if (voltasSeguidas() > 3) {
+      try { sessionStorage.removeItem("portal-voltas"); } catch (e) {}
+      sb.auth.signOut();
+      aviso = { tipo: "erro", texto: "Não foi possível abrir o " + voltar.sistema + " com o acesso guardado neste navegador. Entre de novo." };
+      return false;
+    }
+    voltando = true;
+    location.replace(voltar.caminho);
+    return true;
+  }
   let modo = /type=recovery/.test(url) ? "nova-senha" : pedido === "cadastro" ? "cadastro" : pedido === "senha" ? "esqueci" : "entrar";
   let emailAtual = "";
   let aviso = erroDoLink(url);
@@ -154,7 +188,9 @@
     let html = "";
     if (modo === "entrar") {
       titulo.textContent = "Acessar sistemas";
-      sub.textContent = "Use o mesmo e-mail e senha do CS Flow e do Roadmap.";
+      sub.textContent = voltar
+        ? "Entre para continuar no " + voltar.sistema + "."
+        : "Um só acesso para todos os sistemas da Transdata.";
       html = '<form id="form-acesso" novalidate>' + caixaAviso() +
         campo("a-email", "E-mail", "email", { autocomplete: "username", valor: emailAtual, placeholder: "nome@" + dominio }) +
         campo("a-senha", "Senha", "password", { autocomplete: "current-password" }) +
@@ -330,6 +366,7 @@
     if (evento === "PASSWORD_RECOVERY") { modo = "nova-senha"; aviso = null; desenhar(); mostrarAcesso(); return; }
     if (modo === "nova-senha" && sessao) { desenhar(); mostrarAcesso(); return; }
     if (sessao) {
+      if (voltarAoSistema()) return; // entrou (ou já estava): segue para a página do sistema
       mostrarConta(sessao);
       mostrarPortal();
       if (/access_token=|[?&]code=/.test(location.hash + location.search)) limparUrl();

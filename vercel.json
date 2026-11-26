@@ -1,5 +1,12 @@
 {
-  "cleanUrls": true,
+  "redirects": [
+    { "source": "/reset-password", "destination": "/", "permanent": false }
+  ],
+  "rewrites": [
+    { "source": "/transdata/:caminho*", "destination": "https://projetostransdata.vercel.app/transdata/:caminho*" },
+    { "source": "/transmobile/:caminho*", "destination": "https://transmobile.vercel.app/transmobile/:caminho*" },
+    { "source": "/roadmap/:caminho*", "destination": "https://roadmap-de-evolucao.vercel.app/roadmap/:caminho*" }
+  ],
   "headers": [
     {
       "source": "/(.*)",
