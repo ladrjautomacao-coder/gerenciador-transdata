@@ -598,25 +598,56 @@ html.com-sessao .acesso { display: none; }
   border-radius: 2px;
   background: var(--degrade);
 }
-.acesso-visao { max-width: 440px; margin: 22px 0 0; color: var(--texto-suave); font-size: 1.05rem; line-height: 1.5; }
-.acesso-visao span:first-child {
+.acesso-visao {
+  position: relative;
+  max-width: 470px;
+  margin: 24px 0 0;
+  padding: 16px 20px 20px 22px;
+  overflow: hidden;
+  border-left: 2px solid rgba(255, 122, 0, 0.72);
+  border-radius: 0 14px 14px 0;
+  background: linear-gradient(100deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.018) 78%, transparent);
+  color: var(--texto-suave);
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+.acesso-institucional-cabecalho { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 7px; }
+.acesso-visao-titulo {
   display: block;
-  margin-bottom: 4px;
-  font: 700 0.75rem "Exo", sans-serif;
+  font: 700 0.78rem "Exo", sans-serif;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--ambar);
 }
+.acesso-visao-trocando { animation: acesso-institucional-entra 0.55s cubic-bezier(0.2, 0.75, 0.25, 1) both; }
+.acesso-institucional-contador { color: rgba(255, 255, 255, 0.5); font: 600 0.7rem "Exo", sans-serif; letter-spacing: 0.1em; }
+.acesso-visao-conteudo { min-height: 52px; }
 .acesso-visao-conteudo p { margin: 0; }
+.acesso-institucional-trocando p { animation: acesso-institucional-entra 0.65s cubic-bezier(0.2, 0.75, 0.25, 1) both; }
 .acesso-valores {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px 16px;
+  gap: 8px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
-.acesso-valores li::before { content: "•"; padding-right: 7px; color: var(--ambar); }
+.acesso-valores li {
+  padding: 5px 10px;
+  border: 1px solid rgba(255, 166, 66, 0.3);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.055);
+  color: #f4eaf7;
+  font-size: 0.84rem;
+  opacity: 0;
+  transform: translateY(8px);
+  animation: acesso-valor-entra 0.45s ease var(--atraso, 0s) forwards;
+}
+.acesso-institucional-progresso { position: absolute; inset: auto 0 0; height: 2px; background: rgba(255, 255, 255, 0.1); }
+.acesso-institucional-progresso span { display: block; width: 100%; height: 100%; transform: scaleX(0); transform-origin: left; background: var(--degrade); }
+@keyframes acesso-institucional-entra { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes acesso-valor-entra { to { opacity: 1; transform: none; } }
+@keyframes acesso-institucional-progresso { to { transform: scaleX(1); } }
 
 .acesso-cartao {
   display: grid;
@@ -748,4 +779,5 @@ html.abertura-roda .acesso-cartao { --sobe: 26px; animation: sobe 0.6s cubic-bez
 }
 @media (prefers-reduced-motion: reduce) {
   .botao-acesso.carregando::after { animation-duration: 2s; }
+  .acesso-visao-trocando, .acesso-valores li, .acesso-institucional-trocando p { animation-duration: 0.01ms !important; }
 }

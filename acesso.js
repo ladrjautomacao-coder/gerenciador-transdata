@@ -14,26 +14,43 @@
   // Textos da marca a partir do config.js
   document.getElementById("acesso-marca-titulo").textContent = PORTAL_CONFIG.titulo;
   const faixaInstitucional = PORTAL_CONFIG.institucional;
-  const itensInstitucionais = faixaInstitucional && Array.isArray(faixaInstitucional.itens)
+  const itensConfigurados = faixaInstitucional && Array.isArray(faixaInstitucional.itens)
     ? faixaInstitucional.itens
     : [];
+  const ordemInstitucional = ["Visão", "Missão", "Valores"];
+  const itensInstitucionais = ordemInstitucional
+    .map(function (nome) { return itensConfigurados.find(function (item) { return item.titulo === nome; }); })
+    .filter(Boolean)
+    .concat(itensConfigurados.filter(function (item) { return !ordemInstitucional.includes(item.titulo); }));
   const tituloInstitucional = document.getElementById("acesso-visao-titulo");
   const conteudoInstitucional = document.getElementById("acesso-visao-texto");
+  const contadorInstitucional = document.getElementById("acesso-institucional-contador");
+  const progressoInstitucional = document.getElementById("acesso-institucional-progresso");
 
   if (itensInstitucionais.length && tituloInstitucional && conteudoInstitucional) {
-    const visaoInicial = itensInstitucionais.findIndex(function (item) { return item.titulo === "Visão"; });
-    let indiceInstitucional = visaoInicial >= 0 ? visaoInicial : 0;
+    let indiceInstitucional = 0;
+    const intervalo = Math.max(1, Number(faixaInstitucional.segundosPorItem) || 8) * 1000;
 
     function mostrarItemInstitucional(item) {
       tituloInstitucional.textContent = item.titulo || "";
+      tituloInstitucional.classList.remove("acesso-visao-trocando");
+      void tituloInstitucional.offsetWidth;
+      tituloInstitucional.classList.add("acesso-visao-trocando");
+      if (contadorInstitucional) {
+        contadorInstitucional.textContent = String(indiceInstitucional + 1).padStart(2, "0") + " / " + String(itensInstitucionais.length).padStart(2, "0");
+      }
       conteudoInstitucional.replaceChildren();
+      conteudoInstitucional.classList.remove("acesso-institucional-trocando");
+      void conteudoInstitucional.offsetWidth;
+      conteudoInstitucional.classList.add("acesso-institucional-trocando");
 
       if (Array.isArray(item.valores)) {
         const lista = document.createElement("ul");
         lista.className = "acesso-valores";
-        item.valores.forEach(function (valor) {
+        item.valores.forEach(function (valor, indice) {
           const linha = document.createElement("li");
           linha.textContent = valor;
+          linha.style.setProperty("--atraso", (indice * 0.1) + "s");
           lista.appendChild(linha);
         });
         conteudoInstitucional.appendChild(lista);
@@ -42,11 +59,17 @@
         texto.textContent = item.texto || "";
         conteudoInstitucional.appendChild(texto);
       }
+
+      if (progressoInstitucional) {
+        progressoInstitucional.style.animation = "none";
+        void progressoInstitucional.offsetWidth;
+        progressoInstitucional.style.animationDuration = intervalo + "ms";
+        progressoInstitucional.style.animationName = "acesso-institucional-progresso";
+      }
     }
 
     mostrarItemInstitucional(itensInstitucionais[indiceInstitucional]);
     if (itensInstitucionais.length > 1) {
-      const intervalo = Math.max(1, Number(faixaInstitucional.segundosPorItem) || 8) * 1000;
       window.setInterval(function () {
         indiceInstitucional = (indiceInstitucional + 1) % itensInstitucionais.length;
         mostrarItemInstitucional(itensInstitucionais[indiceInstitucional]);
