@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="x-apple-disable-message-reformatting">
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
+  <title>Confirme o seu e-mail</title>
+  <link href="https://fonts.googleapis.com/css2?family=Exo:wght@700&amp;display=swap" rel="stylesheet">
+  <!--[if mso]><style>table,td,p,a,span,h1{font-family:Arial,sans-serif !important;}</style><![endif]-->
+  <style>
+    body { margin: 0; padding: 0; }
+    a { text-decoration: none; }
+    @media (max-width: 600px) {
+      .td-moldura { padding: 16px 10px !important; }
+      .td-topo { padding: 22px 24px !important; }
+      .td-corpo { padding: 28px 24px 24px !important; }
+      .td-rodape { padding: 18px 24px !important; }
+      .titulo { font-size: 24px !important; }
+    }
+  </style>
+</head>
+<body style="margin:0;padding:0;background-color:#f3eff8;">
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#f3eff8;font-size:1px;line-height:1px;">Confirme o seu e-mail para ativar o acesso ao Gerenciador Transdata.</div>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f3eff8" style="background-color:#f3eff8;">
+    <tr>
+      <td class="td-moldura" align="center" style="padding:32px 16px;">
+        <table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:560px;border-collapse:separate;background-color:#ffffff;border:1px solid #e4dcef;border-radius:16px;overflow:hidden;">
+          <!-- Topo com a marca -->
+          <tr>
+            <td class="td-topo" bgcolor="#4d1476" style="background-color:#4d1476;background-image:linear-gradient(135deg,#5c1a8c 0%,#4d1476 55%,#2f0b4c 100%);padding:26px 40px;border-radius:15px 15px 0 0;">
+              <img src="https://gerenciador-transdata.vercel.app/email/logo-transdata.png" width="200" height="67" alt="TRANSDATA" style="display:block;width:200px;height:auto;border:0;outline:none;color:#ffffff;font-family:Arial,sans-serif;font-size:22px;font-weight:bold;letter-spacing:2px;">
+            </td>
+          </tr>
+          <tr>
+            <td height="4" bgcolor="#f0523d" style="height:4px;line-height:4px;font-size:4px;background-color:#f0523d;background-image:linear-gradient(90deg,#ff7a00 0%,#f0523d 35%,#ff1a52 70%,#d6248f 100%);">&nbsp;</td>
+          </tr>
+          <!-- Mensagem -->
+          <tr>
+            <td class="td-corpo" style="padding:36px 40px 28px;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#3a2950;">
+              <p style="margin:0 0 10px;font-size:12px;line-height:16px;font-weight:bold;letter-spacing:1.5px;text-transform:uppercase;color:#b4205f;">Confirmação de cadastro</p>
+              <h1 class="titulo" style="margin:0 0 20px;font-family:Exo,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:26px;line-height:32px;font-weight:700;color:#2a0b45;">Confirme o seu e-mail</h1>
+              <p style="margin:0 0 12px;font-size:16px;line-height:25px;">{{ if .Data.full_name }}Olá, {{ .Data.full_name }}{{ else }}Olá{{ end }}</p>
+              <p style="margin:0 0 26px;font-size:16px;line-height:25px;">Recebemos o seu pedido de acesso ao Gerenciador Transdata com o e-mail <b style="color:#2a0b45;">{{ .Email }}</b>. Confirme que este e-mail é seu para ativar o acesso.</p>
+              <!-- Botão -->
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 14px;">
+                <tr>
+                  <td bgcolor="#4d1476" style="background-color:#4d1476;border-radius:10px;">
+                    <a href="https://gerenciador-transdata.vercel.app/?token_hash={{ .TokenHash }}&amp;type=email" target="_blank" style="display:inline-block;padding:14px 30px;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:16px;line-height:20px;font-weight:bold;color:#ffffff;text-decoration:none;border-radius:10px;border:1px solid #4d1476;">Confirmar meu e-mail</a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:0 0 28px;font-size:13px;line-height:20px;color:#6b5b7b;">Por segurança, o link vale por pouco tempo e só pode ser usado uma vez.</p>
+              <!-- Próximos passos -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 16px;">
+                <tr>
+                  <td style="padding:0 0 10px;font-size:14px;line-height:20px;font-weight:bold;color:#2a0b45;">Depois da confirmação</td>
+                </tr>
+                <tr>
+                  <td style="padding:0 0 8px;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+                      <td valign="top" width="30" style="width:30px;padding-top:1px;"><span style="display:inline-block;width:22px;height:22px;line-height:22px;border-radius:11px;background-color:#f1e8fa;color:#4d1476;font-size:12px;font-weight:bold;text-align:center;">1</span></td>
+                      <td style="font-size:14px;line-height:22px;color:#3a2950;">Ao confirmar, você já entra no portal. Nas próximas vezes, use o e-mail e a senha que cadastrou.</td>
+                    </tr></table>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:0 0 8px;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+                      <td valign="top" width="30" style="width:30px;padding-top:1px;"><span style="display:inline-block;width:22px;height:22px;line-height:22px;border-radius:11px;background-color:#f1e8fa;color:#4d1476;font-size:12px;font-weight:bold;text-align:center;">2</span></td>
+                      <td style="font-size:14px;line-height:22px;color:#3a2950;">Os administradores liberam os sistemas que você vai usar.</td>
+                    </tr></table>
+                  </td>
+                </tr>
+              </table>
+              <!-- Não pediu -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px;">
+                <tr>
+                  <td bgcolor="#f6f1fb" style="background-color:#f6f1fb;border-left:3px solid #a64bf4;border-radius:8px;padding:14px 16px;font-size:14px;line-height:21px;color:#3a2950;">
+                    <b style="color:#2a0b45;">Não pediu?</b> Pode ignorar este e-mail. Sem a confirmação, o acesso não é ativado.
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:0 0 6px;font-size:12px;line-height:18px;color:#8a7b99;">Se o botão não abrir, copie e cole este endereço no navegador:</p>
+              <p style="margin:0;font-size:12px;line-height:18px;word-break:break-all;"><a href="https://gerenciador-transdata.vercel.app/?token_hash={{ .TokenHash }}&amp;type=email" target="_blank" style="color:#4d1476;text-decoration:underline;">https://gerenciador-transdata.vercel.app/?token_hash={{ .TokenHash }}&amp;type=email</a></p>
+            </td>
+          </tr>
+          <!-- Rodapé -->
+          <tr>
+            <td class="td-rodape" bgcolor="#faf8fc" style="background-color:#faf8fc;border-top:1px solid #eee7f5;padding:20px 40px;border-radius:0 0 15px 15px;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#8a7b99;">
+              <b style="color:#4d1476;">Gerenciador Transdata</b> · Diretoria de Negócios<br>
+              Um só acesso para todos os sistemas da Transdata.<br>
+              Mensagem automática, não é preciso responder.
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

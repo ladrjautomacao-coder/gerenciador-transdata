@@ -3,6 +3,9 @@
 // Transmobile (/transmobile/) e o Roadmap (/roadmap/) abrem dentro deste mesmo endereço e usam esta
 // sessão; sem sessão, eles mandam para cá com ?voltar=<página> e a pessoa volta para lá depois de entrar.
 // Atalhos por link: ?acesso=cadastro abre "Criar acesso" e ?acesso=senha abre "Redefinir senha".
+// Links dos e-mails (modelos em modelos-email/): ?token_hash=...&type=recovery (nova senha) ou
+// &type=email (confirmar cadastro). O código só é usado quando a pessoa clica no botão desta tela,
+// porque os filtros de e-mail (ex.: Microsoft 365) abrem os links antes dela e gastariam o código.
 (function () {
   const raiz = document.documentElement;
   // PORTAL_CONFIG vem do config.js (declarado com const: não fica em window)
@@ -125,7 +128,19 @@
     location.replace(voltar.caminho);
     return true;
   }
-  let modo = /type=recovery/.test(url) ? "nova-senha" : pedido === "cadastro" ? "cadastro" : pedido === "senha" ? "esqueci" : "entrar";
+  // Link de e-mail com código de uso único (ver o comentário do topo)
+  const linkEmail = (function () {
+    const p = new URLSearchParams(location.search);
+    const token = p.get("token_hash") || "";
+    const tipo = p.get("type");
+    if (!/^[A-Za-z0-9_-]{8,200}$/.test(token)) return null;
+    if (tipo === "recovery") return { token: token, tipo: "recovery", senha: true };
+    if (tipo === "email" || tipo === "signup") return { token: token, tipo: "email", senha: false };
+    return null;
+  })();
+  let modo = linkEmail ? "link-email"
+    : /type=recovery/.test(url) ? "nova-senha"
+    : pedido === "cadastro" ? "cadastro" : pedido === "senha" ? "esqueci" : "entrar";
   let emailAtual = "";
   let aviso = erroDoLink(url);
 
@@ -240,6 +255,21 @@
         '<button type="submit" class="botao-acesso">Salvar nova senha</button>' +
         "</form>" +
         '<div class="links-acesso">' + link("entrar", "Voltar para o login") + "</div>";
+    } else if (modo === "link-email") {
+      const senha = linkEmail.senha;
+      titulo.textContent = senha ? "Criar nova senha" : "Confirmar e-mail";
+      sub.textContent = "Você abriu o link enviado por e-mail.";
+      html = caixaAviso() +
+        '<div class="enviado-acesso">' +
+        (senha
+          ? '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15.5" r="1.4"/></svg>'
+          : '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/><path d="m15.5 17 2 2 3.5-4"/></svg>') +
+        "<p>" + (senha
+          ? "Continue para escolher a nova senha do seu acesso."
+          : "Confirme para ativar o seu acesso ao portal.") + "</p>" +
+        "</div>" +
+        '<button type="button" class="botao-acesso" data-link-email>' + (senha ? "Continuar" : "Confirmar meu e-mail") + "</button>" +
+        '<div class="links-acesso">' + link("entrar", "Voltar para o login") + "</div>";
     }
     conteudo.innerHTML = html;
     const primeiro = conteudo.querySelector("input");
@@ -326,11 +356,37 @@
     ir(modo, r.error ? { tipo: "erro", texto: traduzir(r.error) } : { tipo: "ok", texto: "E-mail reenviado para " + esc(emailAtual) + "." });
   }
 
+  // Usa o código do link do e-mail (só depois do clique da pessoa)
+  async function usarLinkEmail() {
+    const botao = conteudo.querySelector("[data-link-email]");
+    if (botao) { botao.disabled = true; botao.classList.add("carregando"); }
+    // type "recovery" avisa PASSWORD_RECOVERY: a tela troca sozinha para "Criar nova senha"
+    const r = await sb.auth.verifyOtp({ token_hash: linkEmail.token, type: linkEmail.tipo });
+    if (r.error) {
+      const m = (r.error.message || "") + " " + (r.error.code || "");
+      if (/failed to fetch|networkerror|network/i.test(m)) return ir("link-email", { tipo: "erro", texto: traduzir(r.error) });
+      limparUrl();
+      return linkEmail.senha
+        ? ir("esqueci", { tipo: "erro", texto: "Este link expirou ou já foi usado. Peça um novo abaixo." })
+        : ir("entrar", { tipo: "erro", texto: "Este link de confirmação expirou ou já foi usado. Entre com o seu e-mail e senha; se ainda faltar confirmar, você poderá pedir um novo link." });
+    }
+    limparUrl();
+    if (linkEmail.senha) { if (modo !== "nova-senha") ir("nova-senha"); return; }
+    // Cadastro confirmado: já entra no portal
+    modo = "entrar";
+    aviso = null;
+    mostrarConta(r.data && r.data.session);
+    mostrarPortal();
+  }
+
   conteudo.addEventListener("submit", function (e) { e.preventDefault(); enviar(); });
   conteudo.addEventListener("click", function (e) {
-    const alvo = e.target.closest("[data-ir], [data-reenviar], .mostrar-senha");
+    const alvo = e.target.closest("[data-ir], [data-reenviar], [data-link-email], .mostrar-senha");
     if (!alvo) return;
+    if (alvo.hasAttribute("data-link-email")) return usarLinkEmail();
     if (alvo.dataset.ir) {
+      // Desiste do link: recarrega o portal sem ele (abre a conta que já estiver neste navegador)
+      if (modo === "link-email") { location.replace(location.pathname); return; }
       const email = valor("a-email").trim();
       if (email) emailAtual = email.toLowerCase();
       if (alvo.dataset.ir === "entrar" && modo === "nova-senha") sb.auth.signOut();
@@ -364,6 +420,8 @@
   // ---------- Sessão ----------
   sb.auth.onAuthStateChange(function (evento, sessao) {
     if (evento === "PASSWORD_RECOVERY") { modo = "nova-senha"; aviso = null; desenhar(); mostrarAcesso(); return; }
+    // Link de e-mail aberto: fica na tela do botão, mesmo com outra conta já aberta neste navegador
+    if (modo === "link-email") { mostrarAcesso(); return; }
     if (modo === "nova-senha" && sessao) { desenhar(); mostrarAcesso(); return; }
     if (sessao) {
       if (voltarAoSistema()) return; // entrou (ou já estava): segue para a página do sistema
