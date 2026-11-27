@@ -2,7 +2,7 @@
 // abrir rápido e funcionar mesmo sem internet. Sempre tenta a versão mais
 // nova na rede primeiro; só usa a cópia guardada se estiver offline.
 // Ao mudar a lista abaixo, aumente o número da versão.
-const CACHE = "portal-transdata-v5";
+const CACHE = "portal-transdata-v6";
 // Sistemas que abrem dentro deste endereço (CS Flow, Transmobile, Roadmap): cada um tem o seu
 // próprio service worker; este não guarda nem responde nada deles.
 const SISTEMAS = /^\/(transdata|transmobile|roadmap)(\/|$)/;
@@ -11,6 +11,7 @@ const ARQUIVOS = [
   "/style.css",
   "/config.js",
   "/acesso.js",
+  "/conta.js",
   "/vendor/supabase-2.119.1.js",
   "/app.js",
   "/cenas.js",

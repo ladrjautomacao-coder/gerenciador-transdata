@@ -27,6 +27,7 @@
       try { temSessao = !!localStorage.getItem("sb-emzqlctomlsjwmgthbkv-auth-token"); } catch (e) {}
       if (/access_token=|[?&]code=/.test(url)) temSessao = true; // link de confirmação do cadastro: vai entrar
       if (/type=recovery/.test(url)) temSessao = false;          // link de redefinir senha: tela de acesso
+      if (/[?&]token_hash=/.test(url)) temSessao = false;        // link dos e-mails: tela do botão
       document.documentElement.classList.add(temSessao ? "com-sessao" : "sem-sessao");
     })();
   </script>
@@ -94,9 +95,26 @@
     <p class="copyright">&copy; <span id="ano"></span> Transdata</p>
   </footer>
 
+  <!-- Minha conta: trocar e-mail e senha; para os administradores do portal, convidar pessoas (conta.js) -->
+  <dialog class="painel-conta" id="painel-conta" aria-labelledby="painel-conta-titulo">
+    <div class="painel-conta-caixa">
+      <div class="painel-conta-topo">
+        <div>
+          <h2 id="painel-conta-titulo">Minha conta</h2>
+          <p class="painel-conta-quem" id="painel-conta-quem"></p>
+        </div>
+        <button type="button" class="painel-fechar" id="painel-conta-fechar" aria-label="Fechar">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <div class="painel-conta-corpo" id="painel-conta-corpo"></div>
+    </div>
+  </dialog>
+
   <script src="vendor/supabase-2.119.1.js"></script>
   <script src="config.js"></script>
   <script src="acesso.js"></script>
+  <script src="conta.js"></script>
   <script src="app.js"></script>
   <script src="cenas.js"></script>
   <script src="cidade.js"></script>

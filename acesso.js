@@ -3,9 +3,10 @@
 // Transmobile (/transmobile/) e o Roadmap (/roadmap/) abrem dentro deste mesmo endereço e usam esta
 // sessão; sem sessão, eles mandam para cá com ?voltar=<página> e a pessoa volta para lá depois de entrar.
 // Atalhos por link: ?acesso=cadastro abre "Criar acesso" e ?acesso=senha abre "Redefinir senha".
-// Links dos e-mails (modelos em modelos-email/): ?token_hash=...&type=recovery (nova senha) ou
-// &type=email (confirmar cadastro). O código só é usado quando a pessoa clica no botão desta tela,
-// porque os filtros de e-mail (ex.: Microsoft 365) abrem os links antes dela e gastariam o código.
+// Links dos e-mails (modelos em modelos-email/): ?token_hash=...&type=recovery (nova senha),
+// email (confirmar cadastro), invite (convite), magiclink (acesso por link) ou email_change (troca
+// de e-mail). O código só é usado quando a pessoa clica no botão desta tela, porque os filtros de
+// e-mail (ex.: Microsoft 365) abrem os links antes dela e gastariam o código.
 (function () {
   const raiz = document.documentElement;
   // PORTAL_CONFIG vem do config.js (declarado com const: não fica em window)
@@ -92,6 +93,8 @@
   });
   const ENDERECO = location.origin + location.pathname;
   const dominio = cfg.dominioCadastro;
+  // Para o conta.js (painel "Minha conta"): o mesmo cliente, os mesmos campos e mensagens
+  window.PortalAcesso = { sb: sb, dominio: dominio, esc: esc, campo: campo };
 
   const url = location.hash + location.search;
   const pedido = new URLSearchParams(location.search).get("acesso");
@@ -128,16 +131,44 @@
     location.replace(voltar.caminho);
     return true;
   }
-  // Link de e-mail com código de uso único (ver o comentário do topo)
+  // Link de e-mail com código de uso único (ver o comentário do topo). Um tipo para cada modelo
+  // de e-mail; "depois" diz o que vem após o clique: "senha" pede a senha, o resto abre o portal.
+  const LINKS_EMAIL = {
+    recovery: {
+      titulo: "Criar nova senha", icone: "cadeado", botao: "Continuar", depois: "senha",
+      texto: "Continue para escolher a nova senha do seu acesso.",
+      vencido: ["esqueci", "Este link expirou ou já foi usado. Peça um novo abaixo."],
+    },
+    email: {
+      titulo: "Confirmar e-mail", icone: "carta", botao: "Confirmar meu e-mail",
+      texto: "Confirme para ativar o seu acesso ao portal.",
+      vencido: ["entrar", "Este link de confirmação expirou ou já foi usado. Entre com o seu e-mail e senha; se ainda faltar confirmar, você poderá pedir um novo link."],
+    },
+    invite: {
+      titulo: "Aceitar convite", icone: "carta", botao: "Aceitar convite", depois: "senha",
+      texto: "Aceite o convite para criar a senha do seu acesso.",
+      vencido: ["entrar", "Este convite expirou ou já foi usado. Se ainda não tem senha, peça um novo convite ao administrador do portal."],
+    },
+    magiclink: {
+      titulo: "Entrar no portal", icone: "carta", botao: "Entrar",
+      texto: "Continue para entrar com o seu e-mail.",
+      vencido: ["entrar", "Este link de acesso expirou ou já foi usado. Entre com o seu e-mail e senha."],
+    },
+    email_change: {
+      titulo: "Confirmar troca de e-mail", icone: "carta", botao: "Confirmar troca",
+      texto: "Confirme para concluir a troca do e-mail do seu acesso.",
+      vencido: ["entrar", "Este link de troca de e-mail expirou ou já foi usado. Se a troca não foi concluída, peça de novo."],
+    },
+  };
   const linkEmail = (function () {
     const p = new URLSearchParams(location.search);
     const token = p.get("token_hash") || "";
-    const tipo = p.get("type");
-    if (!/^[A-Za-z0-9_-]{8,200}$/.test(token)) return null;
-    if (tipo === "recovery") return { token: token, tipo: "recovery", senha: true };
-    if (tipo === "email" || tipo === "signup") return { token: token, tipo: "email", senha: false };
-    return null;
+    let tipo = p.get("type");
+    if (tipo === "signup") tipo = "email";
+    if (!/^[A-Za-z0-9_-]{8,200}$/.test(token) || !Object.prototype.hasOwnProperty.call(LINKS_EMAIL, tipo)) return null;
+    return Object.assign({ token: token, tipo: tipo, senha: LINKS_EMAIL[tipo].depois === "senha" }, LINKS_EMAIL[tipo]);
   })();
+  let convite = false; // "Criar nova senha" aberto por um convite (pessoa ainda sem senha)
   let modo = linkEmail ? "link-email"
     : /type=recovery/.test(url) ? "nova-senha"
     : pedido === "cadastro" ? "cadastro" : pedido === "senha" ? "esqueci" : "entrar";
@@ -186,6 +217,8 @@
       (extra.autocomplete ? ' autocomplete="' + extra.autocomplete + '"' : "") +
       (extra.valor ? ' value="' + esc(extra.valor) + '"' : "") +
       (extra.placeholder ? ' placeholder="' + esc(extra.placeholder) + '"' : "") +
+      (extra.inputmode ? ' inputmode="' + extra.inputmode + '"' : "") +
+      (extra.maxlength ? ' maxlength="' + extra.maxlength + '"' : "") +
       (extra.dica ? ' aria-describedby="' + id + '-dica"' : "") + ">" +
       (senha ? '<button type="button" class="mostrar-senha" data-alvo="' + id + '" aria-label="Mostrar a senha" aria-pressed="false">' + olho + "</button>" : "") +
       "</div>" +
@@ -247,28 +280,25 @@
         '<button type="button" class="botao-acesso secundario" data-reenviar="' + (cadastro ? "signup" : "senha") + '">Reenviar e-mail</button>' +
         '<div class="links-acesso">' + link("entrar", "Voltar para o login") + "</div>";
     } else if (modo === "nova-senha") {
-      titulo.textContent = "Criar nova senha";
-      sub.textContent = "Escolha a nova senha do seu acesso.";
+      titulo.textContent = convite ? "Criar a sua senha" : "Criar nova senha";
+      sub.textContent = convite ? "Convite aceito. Escolha a senha do seu acesso." : "Escolha a nova senha do seu acesso.";
       html = '<form id="form-acesso" novalidate>' + caixaAviso() +
-        campo("a-senha", "Nova senha", "password", { autocomplete: "new-password", dica: "Pelo menos 8 caracteres, com letras e números." }) +
-        campo("a-senha2", "Confirmar nova senha", "password", { autocomplete: "new-password" }) +
-        '<button type="submit" class="botao-acesso">Salvar nova senha</button>' +
+        campo("a-senha", convite ? "Senha" : "Nova senha", "password", { autocomplete: "new-password", dica: "Pelo menos 8 caracteres, com letras e números." }) +
+        campo("a-senha2", convite ? "Confirmar senha" : "Confirmar nova senha", "password", { autocomplete: "new-password" }) +
+        '<button type="submit" class="botao-acesso">' + (convite ? "Salvar senha" : "Salvar nova senha") + "</button>" +
         "</form>" +
         '<div class="links-acesso">' + link("entrar", "Voltar para o login") + "</div>";
     } else if (modo === "link-email") {
-      const senha = linkEmail.senha;
-      titulo.textContent = senha ? "Criar nova senha" : "Confirmar e-mail";
+      titulo.textContent = linkEmail.titulo;
       sub.textContent = "Você abriu o link enviado por e-mail.";
       html = caixaAviso() +
         '<div class="enviado-acesso">' +
-        (senha
+        (linkEmail.icone === "cadeado"
           ? '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15.5" r="1.4"/></svg>'
           : '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/><path d="m15.5 17 2 2 3.5-4"/></svg>') +
-        "<p>" + (senha
-          ? "Continue para escolher a nova senha do seu acesso."
-          : "Confirme para ativar o seu acesso ao portal.") + "</p>" +
+        "<p>" + linkEmail.texto + "</p>" +
         "</div>" +
-        '<button type="button" class="botao-acesso" data-link-email>' + (senha ? "Continuar" : "Confirmar meu e-mail") + "</button>" +
+        '<button type="button" class="botao-acesso" data-link-email>' + linkEmail.botao + "</button>" +
         '<div class="links-acesso">' + link("entrar", "Voltar para o login") + "</div>";
     }
     conteudo.innerHTML = html;
@@ -360,22 +390,32 @@
   async function usarLinkEmail() {
     const botao = conteudo.querySelector("[data-link-email]");
     if (botao) { botao.disabled = true; botao.classList.add("carregando"); }
-    // type "recovery" avisa PASSWORD_RECOVERY: a tela troca sozinha para "Criar nova senha"
+    // "recovery" avisa PASSWORD_RECOVERY: a tela troca sozinha para "Criar nova senha"
     const r = await sb.auth.verifyOtp({ token_hash: linkEmail.token, type: linkEmail.tipo });
     if (r.error) {
       const m = (r.error.message || "") + " " + (r.error.code || "");
       if (/failed to fetch|networkerror|network/i.test(m)) return ir("link-email", { tipo: "erro", texto: traduzir(r.error) });
       limparUrl();
-      return linkEmail.senha
-        ? ir("esqueci", { tipo: "erro", texto: "Este link expirou ou já foi usado. Peça um novo abaixo." })
-        : ir("entrar", { tipo: "erro", texto: "Este link de confirmação expirou ou já foi usado. Entre com o seu e-mail e senha; se ainda faltar confirmar, você poderá pedir um novo link." });
+      return ir(linkEmail.vencido[0], { tipo: "erro", texto: linkEmail.vencido[1] });
     }
     limparUrl();
-    if (linkEmail.senha) { if (modo !== "nova-senha") ir("nova-senha"); return; }
-    // Cadastro confirmado: já entra no portal
+    const sessao = r.data && r.data.session;
+    // Troca de e-mail confirmada nos dois endereços: o primeiro clique ainda não abre a sessão
+    if (!sessao) {
+      return ir("entrar", { tipo: "ok", texto: linkEmail.tipo === "email_change"
+        ? "Link confirmado. Falta confirmar o link enviado para o outro endereço de e-mail."
+        : "Link confirmado. Entre com o seu e-mail e senha." });
+    }
+    // Nova senha ou convite: pede a senha
+    if (linkEmail.senha) {
+      convite = linkEmail.tipo === "invite";
+      if (modo !== "nova-senha" || convite) ir("nova-senha");
+      return;
+    }
+    // Cadastro confirmado, acesso por link ou troca de e-mail: já entra no portal
     modo = "entrar";
     aviso = null;
-    mostrarConta(r.data && r.data.session);
+    mostrarConta(sessao);
     mostrarPortal();
   }
 
@@ -407,9 +447,15 @@
     if (!sessao) { conta.hidden = true; conta.innerHTML = ""; return; }
     const u = sessao.user || {};
     const nome = (u.user_metadata && (u.user_metadata.full_name || u.user_metadata.nome)) || u.email || "";
-    conta.innerHTML = "Conectado como <b>" + esc(nome) + '</b> · <button type="button" class="link-sair" id="sair">Sair</button>';
+    conta.innerHTML = "Conectado como <b>" + esc(nome) + "</b> · " +
+      '<button type="button" class="link-sair" id="abrir-conta" aria-haspopup="dialog">Minha conta</button> · ' +
+      '<button type="button" class="link-sair" id="sair">Sair</button>';
     conta.hidden = false;
+    document.getElementById("abrir-conta").addEventListener("click", function () {
+      if (window.PortalConta) window.PortalConta.abrir();
+    });
     document.getElementById("sair").addEventListener("click", async function () {
+      if (window.PortalConta) window.PortalConta.fechar();
       await sb.auth.signOut();
       emailAtual = u.email || "";
       ir("entrar");
