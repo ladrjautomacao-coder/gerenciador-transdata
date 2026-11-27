@@ -11,7 +11,8 @@ const PORTAL_CONFIG = {
       icone: "onibus",
       cena: "corredor",
       rotulo: "Sistema",
-      url: "https://projetostransdata.vercel.app/",
+      // Os sistemas abrem dentro deste endereço (ver vercel.json) e usam o login deste portal.
+      url: "/transdata/",
       novaAba: true,
     },
     {
@@ -20,7 +21,7 @@ const PORTAL_CONFIG = {
       icone: "satelite",
       cena: "orbita",
       rotulo: "Sistema",
-      url: "https://transmobile.vercel.app/login",
+      url: "/transmobile/",
       novaAba: true,
     },
     {
@@ -56,13 +57,13 @@ const PORTAL_CONFIG = {
       icone: "rota",
       cena: "marcos",
       rotulo: "Melhoria Contínua",
-      // App próprio (projeto "RoadMap de Evolução"), com o mesmo login do Portal Transdata.
-      url: "https://roadmap-de-evolucao.vercel.app",
+      // App próprio (projeto "RoadMap de Evolução"), dentro deste endereço e com o login deste portal.
+      url: "/roadmap/",
       novaAba: true,
     },
   ],
 
-  // Login (o mesmo do CS Flow e do Roadmap: banco Supabase "Portal oficial - Transdata").
+  // Login único dos sistemas (banco Supabase "Portal oficial - Transdata"): CS Flow, Transmobile e Roadmap.
   // A chave é a publicável: pode ficar no navegador. O cadastro novo só aceita e-mails do domínio abaixo.
   acesso: {
     supabaseUrl: "https://emzqlctomlsjwmgthbkv.supabase.co",
